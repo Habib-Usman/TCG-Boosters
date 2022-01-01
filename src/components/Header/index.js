@@ -1,12 +1,22 @@
 import React from "react";
 import "./styles.scss";
+import { Link } from "react-router-dom";
 
 const Header = (props) => {
     return (
         <header className="header">
             <div className="wrap">
                 <div className="logo">
-                    <h1>TCG Boosters</h1>
+                    <Link to="/">
+                        <h1>TCG Boosters</h1>
+                    </Link>
+                </div>
+                <div className="callToActions">
+                    <ul>
+                        <li>
+                            <Link to="/registration">Register</Link>
+                        </li>
+                    </ul>
                 </div>
             </div>
         </header>
