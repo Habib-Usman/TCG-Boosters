@@ -12,10 +12,12 @@ const GoogleProvider = new firebase.auth.GoogleAuthProvider();
 GoogleProvider.setCustomParameters({ prompt: "select_account" });
 export const signInWithGoogle = () => auth.signInWithPopup(GoogleProvider);
 
+//takes user auth
 export const handleUserProfile = async (userAuth, additionalData) => {
     if (!userAuth) return;
     const { uid } = userAuth;
 
+    //checking if user is in db
     const userRef = firestore.doc(`users/${uid}`);
     const snapshot = await userRef.get();
 
@@ -23,6 +25,7 @@ export const handleUserProfile = async (userAuth, additionalData) => {
         const { displayName, email } = userAuth;
         const timestamp = new Date();
 
+        //if not register them
         try {
             await userRef.set({
                 displayName,
