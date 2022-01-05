@@ -4,6 +4,7 @@ import "./styles.scss";
 import Buttons from "../forms/Button";
 import { signInWithGoogle, auth } from "../../firebase/utils";
 
+import AuthWrapper from "../AuthWrapper";
 import FormInput from "../forms/FormInput";
 import Button from "../forms/Button";
 
@@ -44,42 +45,42 @@ class SignIn extends Component {
     };
 
     render() {
+        const configAuthWrapper = {
+            headline: "Login",
+        };
         const { email, password } = this.state;
 
         return (
-            <div className="signin">
-                <div className="wrap">
-                    <h2>Login</h2>
-                    <div className="formWrap">
-                        <form onSubmit={this.handleSubmit}>
-                            <FormInput
-                                type="email"
-                                name="email"
-                                value={email}
-                                placeholder="Email"
-                                handleChange={this.handleChange}
-                            ></FormInput>
-                            <FormInput
-                                type="password"
-                                name="password"
-                                value={password}
-                                placeholder="Password"
-                                handleChange={this.handleChange}
-                            ></FormInput>
+            <AuthWrapper {...configAuthWrapper}>
+                <div className="formWrap">
+                    <form onSubmit={this.handleSubmit}>
+                        <FormInput
+                            type="email"
+                            name="email"
+                            value={email}
+                            placeholder="Email"
+                            handleChange={this.handleChange}
+                        ></FormInput>
+                        <FormInput
+                            type="password"
+                            name="password"
+                            value={password}
+                            placeholder="Password"
+                            handleChange={this.handleChange}
+                        ></FormInput>
 
-                            <Buttons type="submit">Login</Buttons>
+                        <Buttons type="submit">Login</Buttons>
 
-                            <div className="socialSignin">
-                                <div className="row">
-                                    <Buttons onClick={signInWithGoogle}>
-                                        Sign in with Google
-                                    </Buttons>
-                                </div>
+                        <div className="socialSignin">
+                            <div className="row">
+                                <Buttons onClick={signInWithGoogle}>
+                                    Sign in with Google
+                                </Buttons>
                             </div>
-                        </form>
-                    </div>
+                        </div>
+                    </form>
                 </div>
-            </div>
+            </AuthWrapper>
         );
     }
 }
