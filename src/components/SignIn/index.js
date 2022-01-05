@@ -1,4 +1,5 @@
 import { Component } from "react";
+import { Link } from "react-router-dom";
 
 import "./styles.scss";
 import Buttons from "../forms/Button";
@@ -77,6 +78,10 @@ class SignIn extends Component {
                                     Sign in with Google
                                 </Buttons>
                             </div>
+                        </div>
+
+                        <div className="links">
+                            <Link to="/recovery">Reset Password</Link>
                         </div>
                     </form>
                 </div>

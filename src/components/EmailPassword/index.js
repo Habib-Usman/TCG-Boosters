@@ -1,14 +1,16 @@
 import { Component } from "react";
-import { useNavigate } from "react-router-dom";
+// import { useNavigate } from "react-router-dom";
 import "./styles.scss";
 
 import AuthWrapper from "../AuthWrapper";
 import FormInput from "../forms/FormInput";
 import Button from "../forms/Button";
 import { auth } from "../../firebase/utils";
+import { withRouter } from "../withRouter/";
 
 const initialState = {
     email: "",
+    errors: [],
 };
 
 class EmailPassword extends Component {
@@ -38,16 +40,21 @@ class EmailPassword extends Component {
                 url: "http://localhost:3000/login",
             };
 
-            // const navigate = useNavigate();
             await auth
 
                 .sendPasswordResetEmail(email, config)
                 .then(() => {
-                    console.log("hello");
-                    useNavigate("/login");
+                    this.props.navigate("/login");
+                    // const navigate = useNavigate();
+                    // console.log(navigate);
+
+                    // navigate(-1);
                 })
                 .catch(() => {
-                    console.log("something went wrong");
+                    const err = ["Email not found. Please try again"];
+                    this.setState({
+                        errors: err,
+                    });
                 });
         } catch (err) {
             // console.log(err)
@@ -55,7 +62,7 @@ class EmailPassword extends Component {
     };
 
     render() {
-        const { email } = this.state;
+        const { email, errors } = this.state;
 
         const configAuthWrapper = {
             headline: "Email Password",
@@ -64,6 +71,14 @@ class EmailPassword extends Component {
         return (
             <AuthWrapper {...configAuthWrapper}>
                 <div className="formWrap">
+                    {errors.length > 0 && (
+                        <ul>
+                            {errors.map((e, index) => {
+                                return <li key={index}>{e}</li>;
+                            })}
+                        </ul>
+                    )}
+
                     <form onSubmit={this.handleSubmit}>
                         <FormInput
                             type="email"
@@ -80,4 +95,4 @@ class EmailPassword extends Component {
         );
     }
 }
-export default EmailPassword;
+export default withRouter(EmailPassword);
