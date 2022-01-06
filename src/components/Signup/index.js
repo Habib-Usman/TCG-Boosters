@@ -1,20 +1,41 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { withRouter } from "../withRouter";
+import { useDispatch, useSelector } from "react-redux";
+import { signUpUser, resetAllAuthForms } from "../redux/User/user.actions";
 
 import "./styles.scss";
-
-import { auth, handleUserProfile } from "../../firebase/utils";
 
 import AuthWrapper from "../AuthWrapper";
 import FormInput from "../forms/FormInput";
 import Button from "../forms/Button";
 
+const mapState = ({ user }) => ({
+    signUpSuccess: user.signUpSuccess,
+    signUpError: user.signUpError,
+});
+
 const Signup = (props) => {
+    const { signUpError, signUpSuccess } = useSelector(mapState);
+    const dispatch = useDispatch();
     const [displayName, setDisplayName] = useState("");
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [confirmPassword, setConfirmPassword] = useState("");
     const [errors, setErrors] = useState([]);
+
+    useEffect(() => {
+        if (signUpSuccess) {
+            reset();
+            dispatch(resetAllAuthForms());
+            props.navigate("/");
+        }
+    }, [signUpSuccess]);
+
+    useEffect(() => {
+        if (Array.isArray(signUpError) && signUpError.length > 0) {
+            setErrors(signUpError);
+        }
+    }, [signUpError]);
 
     const reset = () => {
         setDisplayName("");
@@ -24,35 +45,43 @@ const Signup = (props) => {
         setErrors([]);
     };
 
-    const handleFormSubmit = async (event) => {
+    const handleFormSubmit = (event) => {
         event.preventDefault();
-
-        if (password !== confirmPassword) {
-            const err = ["Password does not match"];
-            setErrors([err]);
-
-            return;
-        }
-
-        if (password.length < 6) {
-            const err = ["Password must be at least 6 characters"];
-            setErrors([err]);
-
-            return;
-        }
-
-        try {
-            const { user } = await auth.createUserWithEmailAndPassword(
+        dispatch(
+            signUpUser({
+                displayName,
                 email,
-                password
-            );
+                password,
+                confirmPassword,
+            })
+        );
 
-            await handleUserProfile(user, { displayName });
-            reset();
-            props.navigate("/");
-        } catch (err) {
-            // console.log(err);
-        }
+        // if (password !== confirmPassword) {
+        //     const err = ["Password does not match"];
+        //     setErrors([err]);
+
+        //     return;
+        // }
+
+        // if (password.length < 6) {
+        //     const err = ["Password must be at least 6 characters"];
+        //     setErrors([err]);
+
+        //     return;
+        // }
+
+        // try {
+        //     const { user } = await auth.createUserWithEmailAndPassword(
+        //         email,
+        //         password
+        //     );
+
+        //     await handleUserProfile(user, { displayName });
+        //     reset();
+        //     props.navigate("/");
+        // } catch (err) {
+        //     // console.log(err);
+        // }
     };
 
     const configAuthWrapper = {

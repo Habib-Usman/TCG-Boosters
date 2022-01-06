@@ -2,7 +2,7 @@ import { Route, Routes, Navigate } from "react-router-dom";
 import { auth, handleUserProfile } from "./firebase/utils";
 import { useEffect } from "react";
 import { setCurrentUser } from "./components/redux/User/user.actions";
-import { connect } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
 
 //hoc
 import WithAuth from "./components/hoc/withAuth";
@@ -21,20 +21,22 @@ import Dashboard from "./pages/Dashboard";
 import "./default.scss";
 
 const App = (props) => {
-    const { setCurrentUser, currentUser } = props;
+    const dispatch = useDispatch();
     useEffect(() => {
         const authListner = auth.onAuthStateChanged(async (userAuth) => {
             if (userAuth) {
                 const userRef = await handleUserProfile(userAuth);
                 userRef.onSnapshot((snapshot) => {
-                    setCurrentUser({
-                        id: snapshot.id,
-                        ...snapshot.data(),
-                    });
+                    dispatch(
+                        setCurrentUser({
+                            id: snapshot.id,
+                            ...snapshot.data(),
+                        })
+                    );
                 });
             }
 
-            setCurrentUser(userAuth);
+            dispatch(setCurrentUser(userAuth));
         });
 
         return () => {
@@ -57,25 +59,17 @@ const App = (props) => {
                 <Route
                     path="/registration"
                     element={
-                        currentUser ? (
-                            <Navigate to="/"></Navigate>
-                        ) : (
-                            <MainLayout>
-                                <Registration></Registration>
-                            </MainLayout>
-                        )
+                        <MainLayout>
+                            <Registration></Registration>
+                        </MainLayout>
                     }
                 ></Route>
                 <Route
                     path="/login"
                     element={
-                        currentUser ? (
-                            <Navigate to="/"></Navigate>
-                        ) : (
-                            <MainLayout>
-                                <Login></Login>
-                            </MainLayout>
-                        )
+                        <MainLayout>
+                            <Login></Login>
+                        </MainLayout>
                     }
                 ></Route>
                 <Route
@@ -109,4 +103,4 @@ const mapDispatchToProps = (dispatch) => ({
     setCurrentUser: (user) => dispatch(setCurrentUser(user)),
 });
 
-export default connect(mapStateToProps, mapDispatchToProps)(App);
+export default App;

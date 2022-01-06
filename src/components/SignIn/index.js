@@ -1,34 +1,50 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { withRouter } from "../withRouter";
+import { useDispatch, useSelector } from "react-redux";
+import {
+    signInUser,
+    signInWithGoogle,
+    resetAllAuthForms,
+} from "../redux/User/user.actions";
 
 import "./styles.scss";
 import Buttons from "../forms/Button";
-import { signInWithGoogle, auth } from "../../firebase/utils";
 
 import AuthWrapper from "../AuthWrapper";
 import FormInput from "../forms/FormInput";
 import Button from "../forms/Button";
 
+const mapState = ({ user }) => ({
+    signInSuccess: user.signInSuccess,
+});
+
 const SignIn = (props) => {
+    const { signInSuccess } = useSelector(mapState);
+    const dispatch = useDispatch();
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
+
+    useEffect(() => {
+        if (signInSuccess) {
+            resetForm();
+            dispatch(resetAllAuthForms());
+            props.navigate("/");
+        }
+    }, [signInSuccess]);
 
     const resetForm = () => {
         setEmail("");
         setPassword("");
     };
 
-    const handleSubmit = async (e) => {
+    const handleSubmit = (e) => {
         e.preventDefault();
+        dispatch(signInUser({ email, password }));
+    };
 
-        try {
-            await auth.signInWithEmailAndPassword(email, password);
-            resetForm();
-            props.navigate("/");
-        } catch (err) {
-            // console.log(err)
-        }
+    const handleGoogleSignIn = () => {
+        dispatch(signInWithGoogle());
     };
 
     const configAuthWrapper = {
@@ -58,7 +74,7 @@ const SignIn = (props) => {
 
                     <div className="socialSignin">
                         <div className="row">
-                            <Buttons onClick={signInWithGoogle}>
+                            <Buttons onClick={handleGoogleSignIn}>
                                 Sign in with Google
                             </Buttons>
                         </div>
