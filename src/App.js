@@ -3,8 +3,12 @@ import { checkUserSession } from "./components/redux/User/user.actions";
 import { useEffect } from "react";
 import { useDispatch } from "react-redux";
 
+//components
+import AdminToolbar from "./components/AdminToolbar";
+
 //hoc
 import WithAuth from "./components/hoc/withAuth";
+import WithAdminAuth from "./components/hoc/withAdminAuth";
 
 //layouts
 import MainLayout from "./layouts/MainLayout";
@@ -16,6 +20,7 @@ import Registration from "./pages/Registration";
 import Login from "./pages/Login";
 import Recovery from "./pages/Recovery";
 import Dashboard from "./pages/Dashboard";
+import Admin from "./pages/Admin";
 
 import "./default.scss";
 
@@ -27,6 +32,7 @@ const App = (props) => {
 
     return (
         <div className="App">
+            <AdminToolbar></AdminToolbar>
             <Routes>
                 <Route
                     exact
@@ -71,6 +77,16 @@ const App = (props) => {
                         </WithAuth>
                     }
                 ></Route>
+                <Route
+                    path="/admin"
+                    element={
+                        <WithAdminAuth>
+                            <MainLayout>
+                                <Admin />
+                            </MainLayout>
+                        </WithAdminAuth>
+                    }
+                />
             </Routes>
         </div>
     );

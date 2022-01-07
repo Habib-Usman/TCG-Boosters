@@ -15,6 +15,7 @@ GoogleProvider.setCustomParameters({ prompt: "select_account" });
 export const handleUserProfile = async ({ userAuth, additionalData }) => {
     if (!userAuth) return;
     const { uid } = userAuth;
+    const userRoles = ["user"];
 
     //checking if user is in db
     const userRef = firestore.doc(`users/${uid}`);
@@ -30,13 +31,14 @@ export const handleUserProfile = async ({ userAuth, additionalData }) => {
                 displayName,
                 email,
                 createdDate: timestamp,
+                userRoles,
                 ...additionalData,
             });
         } catch (err) {
             // console.log(err)
         }
     }
-    console.log(userRef, 1);
+
     return userRef;
 };
 
