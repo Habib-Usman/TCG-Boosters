@@ -9,6 +9,8 @@ import Modal from "./../../components/Modal";
 import FormInput from "./../../components/forms/FormInput";
 import FormSelect from "./../../components/forms/FormSelect";
 import Button from "./../../components/forms/Button";
+import LoadMore from "./../../components/LoadMore";
+import { CKEditor } from "ckeditor4-react";
 import "./styles.scss";
 
 const mapState = ({ productsData }) => ({
@@ -23,6 +25,9 @@ const Admin = (props) => {
     const [productName, setProductName] = useState("");
     const [productThumbnail, setProductThumbnail] = useState("");
     const [productPrice, setProductPrice] = useState(0);
+    const [productDesc, setProductDesc] = useState("");
+
+    const { data, queryDoc, isLastPage } = products;
 
     useEffect(() => {
         dispatch(fetchProductsStart());
@@ -41,6 +46,7 @@ const Admin = (props) => {
         setProductName("");
         setProductThumbnail("");
         setProductPrice(0);
+        setProductDesc("");
     };
 
     const handleSubmit = (e) => {
@@ -52,9 +58,23 @@ const Admin = (props) => {
                 productName,
                 productThumbnail,
                 productPrice,
+                productDesc,
             })
         );
         resetForm();
+    };
+
+    const handleLoadMore = () => {
+        dispatch(
+            fetchProductsStart({
+                startAfterDoc: queryDoc,
+                persistProducts: data,
+            })
+        );
+    };
+
+    const configLoadMore = {
+        onLoadMoreEvt: handleLoadMore,
     };
 
     return (
@@ -119,10 +139,19 @@ const Admin = (props) => {
                             }
                         />
 
+                        <CKEditor
+                            onChange={(evt) =>
+                                setProductDesc(evt.editor.getData())
+                            }
+                        />
+
+                        <br />
+
                         <Button type="submit">Add product</Button>
                     </form>
                 </div>
             </Modal>
+
             <div className="manageProducts">
                 <table border="0" cellPadding="0" cellSpacing="0">
                     <tbody>
@@ -140,42 +169,68 @@ const Admin = (props) => {
                                     cellSpacing="0"
                                 >
                                     <tbody>
-                                        {products.map((product, index) => {
-                                            const {
-                                                productName,
-                                                productThumbnail,
-                                                productPrice,
-                                                documentID,
-                                            } = product;
+                                        {Array.isArray(data) &&
+                                            data.length > 0 &&
+                                            data.map((product, index) => {
+                                                const {
+                                                    productName,
+                                                    productThumbnail,
+                                                    productPrice,
+                                                    documentID,
+                                                } = product;
 
-                                            return (
-                                                <tr key={index}>
-                                                    <td>
-                                                        <img
-                                                            className="thumb"
-                                                            src={
-                                                                productThumbnail
-                                                            }
-                                                        />
-                                                    </td>
-                                                    <td>{productName}</td>
-                                                    <td>£{productPrice}</td>
-                                                    <td>
-                                                        <Button
-                                                            onClick={() =>
-                                                                dispatch(
-                                                                    deleteProductStart(
-                                                                        documentID
+                                                return (
+                                                    <tr key={index}>
+                                                        <td>
+                                                            <img
+                                                                className="thumb"
+                                                                src={
+                                                                    productThumbnail
+                                                                }
+                                                            />
+                                                        </td>
+                                                        <td>{productName}</td>
+                                                        <td>£{productPrice}</td>
+                                                        <td>
+                                                            <Button
+                                                                onClick={() =>
+                                                                    dispatch(
+                                                                        deleteProductStart(
+                                                                            documentID
+                                                                        )
                                                                     )
-                                                                )
-                                                            }
-                                                        >
-                                                            Delete
-                                                        </Button>
-                                                    </td>
-                                                </tr>
-                                            );
-                                        })}
+                                                                }
+                                                            >
+                                                                Delete
+                                                            </Button>
+                                                        </td>
+                                                    </tr>
+                                                );
+                                            })}
+                                    </tbody>
+                                </table>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td></td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <table
+                                    border="0"
+                                    cellPadding="10"
+                                    cellSpacing="0"
+                                >
+                                    <tbody>
+                                        <tr>
+                                            <td>
+                                                {!isLastPage && (
+                                                    <LoadMore
+                                                        {...configLoadMore}
+                                                    />
+                                                )}
+                                            </td>
+                                        </tr>
                                     </tbody>
                                 </table>
                             </td>

@@ -13,7 +13,7 @@ const useAdminAuth = (props) => {
 
     useEffect(() => {
         if (!checkUserIsAdmin(currentUser)) {
-            navigate.push("/login");
+            navigate("/login");
         }
     }, [currentUser]);
 
