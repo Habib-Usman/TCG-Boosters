@@ -73,7 +73,7 @@ const ProductResults = ({}) => {
     return (
         <div className="products">
             <h1>Browse Products</h1>
-            <FormSelect {...configFilters} />
+            {/* <FormSelect {...configFilters} /> */}
             <div className="productResults">
                 {data.map((product, pos) => {
                     const { productThumbnail, productName, productPrice } =

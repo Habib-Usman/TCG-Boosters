@@ -190,7 +190,9 @@ const Admin = (props) => {
                                                             />
                                                         </td>
                                                         <td>{productName}</td>
-                                                        <td>£{productPrice}</td>
+                                                        <td>
+                                                            A$ {productPrice}
+                                                        </td>
                                                         <td>
                                                             <Button
                                                                 onClick={() =>
